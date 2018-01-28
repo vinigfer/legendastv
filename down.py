@@ -1,8 +1,6 @@
 from bs4 import BeautifulSoup
-import re
 import requests
-import sys
-import json
+
 
 class LegendasTV(object):
     URL_BUSCA = 'http://legendas.tv/legenda/busca/%s/1'
@@ -64,18 +62,18 @@ class LegendasTV(object):
             if method == 'POST' and data:
                 return self.session.post(url, data=data, headers=headers)
         else:
-            pass # raise exception
+            pass  # raise exception
 
     def search(self, series_name, episode_code, lang='pt-br', tipo='release'):
         q = series_name + " " + episode_code
         if not q:
-           pass # raise exception
+            pass  # raise exception
 
         if not lang or not self.LEGENDA_LANG.get(lang):
-           pass # raise exception
+            pass  # raise exception
 
         if not tipo or not self.LEGENDA_TIPO.get(tipo):
-           pass # raise exception
+            pass  # raise exception
 
         busca = {
             'txtLegenda': q,
@@ -86,12 +84,10 @@ class LegendasTV(object):
             'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0'
         }
         request = self._request(self.URL_BUSCA % q, method='POST', data=busca, headers=headers)
-        print(request)
         if request:
             return self._parser(request.text, series_name, episode_code)
         else:
-            pass # raise exception
-
+            pass  # raise exception
 
     def _parser(self, data, series_name, episode_code):
         html = BeautifulSoup(data, "html5lib")
@@ -100,19 +96,16 @@ class LegendasTV(object):
             if result.get("href") is not None:
                 path_href = result.get("href").split("/")
 
-                if episode_code in result.get("href") and series_name.replace(" ","_") == path_href[3]:
-                    print(result)
+                if episode_code in result.get("href") and series_name.replace(" ", "_") == path_href[3]:
                     unique_id_download = path_href[2]
                     url = self.URL_DOWNLOAD % unique_id_download
                     return url
 
-    def download(self, url_da_legenda, path_e_nome_do_arquivo):
+    def download(self, url_legenda, save_path):
         download_header = {
             'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
         }
-        request = self._request(url_da_legenda, method='GET', headers=download_header)
+        request = self._request(url_legenda, method='GET', headers=download_header)
         if request:
-            with open(path_e_nome_do_arquivo + ".rar", 'wb') as handle:
-                print(u'Baixando legenda:', url_da_legenda)
-                print("")
+            with open(save_path + ".rar", 'wb') as handle:
                 handle.write(request.content)
