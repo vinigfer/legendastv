@@ -90,7 +90,7 @@ class LegendasTV(object):
             pass  # raise exception
 
     def _parser(self, data, series_name, episode_code):
-        html = BeautifulSoup(data, "html5lib")
+        html = BeautifulSoup(data, features="html.parser")
         results = html.findAll("a")
         for result in results:
             if result.get("href") is not None:
@@ -107,5 +107,5 @@ class LegendasTV(object):
         }
         request = self._request(url_legenda, method='GET', headers=download_header)
         if request:
-            with open(save_path + ".rar", 'wb') as handle:
+            with open(save_path + ".zip", 'wb') as handle:
                 handle.write(request.content)
