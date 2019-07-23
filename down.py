@@ -1,5 +1,6 @@
-from bs4 import BeautifulSoup
 import requests
+from bs4 import BeautifulSoup
+from zipfile import ZipFile
 
 
 class LegendasTV(object):
@@ -85,7 +86,7 @@ class LegendasTV(object):
         }
         request = self._request(self.URL_BUSCA % q, method='POST', data=busca, headers=headers)
         if request:
-            return self._parser(request.text, series_name, episode_code)
+            return self._parser((request.text).encode("utf-8"), series_name, episode_code)
         else:
             pass  # raise exception
 
@@ -96,16 +97,21 @@ class LegendasTV(object):
             if result.get("href") is not None:
                 path_href = result.get("href").split("/")
 
-                if episode_code in result.get("href") and series_name.replace(" ", "_") == path_href[3]:
+                if episode_code in result.get("href") and series_name.upper().replace(" ", "_") == path_href[3].upper():
                     unique_id_download = path_href[2]
                     url = self.URL_DOWNLOAD % unique_id_download
                     return url
 
-    def download(self, url_legenda, save_path):
+    def download(self, url_legenda, file_absolute_path, video_name=None):
         download_header = {
             'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:52.0) Gecko/20100101 Firefox/52.0',
         }
         request = self._request(url_legenda, method='GET', headers=download_header)
         if request:
-            with open(save_path + ".zip", 'wb') as handle:
+            file_absolute_path_with_extension = file_absolute_path + ".zip"
+            with open(file_absolute_path_with_extension, 'wb') as handle:
                 handle.write(request.content)
+
+            with ZipFile(file_absolute_path_with_extension, 'r') as zip_file:
+                for name in zip_file.namelist():
+                    print('%s' % (name))
