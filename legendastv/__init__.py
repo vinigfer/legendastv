@@ -39,7 +39,7 @@ class LegendasTV:
         # int_idioma 1 = pt-br
         # selTipo 1 = release
         search_payload = {"txtLegenda": search_string, "int_idioma": 1, "selTipo": 1}
-        url = f"http://legendas.tv/legenda/busca/{q}/1"
+        url = f"http://legendas.tv/legenda/busca/{search_string}/1"
         request = self._request(url, method="POST", data=search_payload)
         return self._get_first_url((request.text).encode("utf-8"), series_name, episode_code)
 
@@ -64,6 +64,6 @@ class LegendasTV:
                 file_handler.write(request.content)
 
             # WIP: Only download subtitle if we have a match in file name
-            with ZipFile(file_absolute_path_with_extension, "r") as zip_file_reader:
-                for file_name in zip_file_reader.namelist():
-                    print(file_name)
+            # with ZipFile(file_absolute_path_with_extension, "r") as zip_file_reader:
+            #     for file_name in zip_file_reader.namelist():
+            #         print(file_name)
