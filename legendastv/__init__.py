@@ -49,7 +49,7 @@ class LegendasTV:
         for current_link in existing_links:
             current_href = current_link.get("href")
 
-            if current_href and episode_code in current_href:
+            if current_href and episode_code.lower() in current_href.lower():
                 current_href = current_href.split("/")
 
                 if series_name.upper().replace(" ", "_") == current_href[3].upper():
